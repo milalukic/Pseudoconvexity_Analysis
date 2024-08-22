@@ -5,15 +5,13 @@ from calculating_grad import evaluate_expression
 from interval_matrix import IntervalMatrix, Interval
 from tests_unofficial import f1, f_der1, f_der2, f2, f2_der1, f2_der2
 
-# Computing the hessian matrix and gradients from a function 
 def compute_hessian(f, symbols):
-    hessian_matrix = sp.hessian(f, symbols)
-    return hessian_matrix
+    # Compute the Hessian matrix of a function.
+    return sp.hessian(f, symbols)
 
 def compute_gradient(f, symbols):
-    gradient = []
-    for symbol in symbols:
-        gradient.append(sp.diff(f, symbol))
+    # Compute the gradient vector of a function.
+    gradient = [sp.diff(f, symbol) for symbol in symbols]
     return sp.Matrix(gradient)
 
 def make_gradient_matrix(g):
@@ -23,34 +21,26 @@ def make_gradient_matrix(g):
     return g_matrix_expanded
 
 def compute_M(H, g, intervals, symbols, alpha=1.0):
-    # M_alpha = H + alpha*g*g^T - actual formula to calculate M
+    # Compute the matrix M_alpha using Hessian H, gradient g, and scalar alpha.
     g_matrix = make_gradient_matrix(g)
-    M = H + alpha*g_matrix
+    M = H + alpha * g_matrix
 
-    M_eval = []
-    for expression in M:
-        result = evaluate_expression(str(expression), intervals, symbols)
-        M_eval.append(result)
-
+    M_eval = [evaluate_expression(str(expr), intervals, symbols) for expr in M]
     return IntervalMatrix(M_eval)
 
 def first_condition(M):
-    # min_ev = smallest eingenvalue of M_alpha_c
+    # Check if the smallest eigenvalue of M_alpha_c is at least the largest eigenvalue of M_alpha_delta.
     min_evc = min(np.linalg.eigvals(M.calculateMidpoint()))
-    # spectral_radius = max eingenvalue of M_alpha_delta
     max_evd = max(np.linalg.eigvals(M.calculateRadius()))
-    if min_evc >= max_evd:
-        return True
-    return False
+    return min_evc >= max_evd
 
 def second_condition(M):
-    # M_alpha_c - M_alpha_delta*diag(z) is positive semidefinite for every z={+-1}^n-1 x {1}
+    # Check if M_alpha_c - M_alpha_delta * diag(z) is positive semidefinite for every z.
     Mc = M.calculateMidpoint()
     Md = M.calculateRadius()
-    z = np.diag([1 for _ in range(M.rows)])
-    
-    M_combined = Mc - np.dot(Md, z)
-    print(M_combined)
+    z = np.diag([1] * M.rows)
 
-    # positive semidefinite = all eigvals >= 0
+    M_combined = Mc - np.dot(Md, z)
+
+    # Check if all eigenvalues are non-negative
     return np.all(np.linalg.eigvals(M_combined) >= 0)

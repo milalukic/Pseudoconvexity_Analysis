@@ -4,19 +4,15 @@ import math
 
 class IntervalMatrix:
     def __init__(self, intervals):
-        self.rows = int(math.sqrt(len(intervals)))
-        self.cols = self.rows
-        
+        size = int(math.sqrt(len(intervals)))
+        self.rows = size
+        self.cols = size
         self.intervals = []
 
-        it = 0
-
-        for _ in range(self.rows):
-            self.intervals.append(intervals[it:self.cols+it])
-            it+=self.cols
+        for i in range(size):
+            self.intervals.append(intervals[i*size:(i+1)*size])
     
     def __str__(self) -> str:
-        # each row in a
         return "\n".join([str(row) for row in self.intervals])
     
     def get_interval(self, i, j) -> Interval:
@@ -25,7 +21,6 @@ class IntervalMatrix:
     def set_interval(self, i, j, interval):
         self.intervals[i][j] = interval
     
-    # Adds two interval matrices.
     def add(self, other):
         if self.rows != other.rows and self.cols != other.cols:
             return ValueError("Matrices must have the same shape for addition")
@@ -50,7 +45,6 @@ class IntervalMatrix:
             for j in range(cols_B):
                 for k in range(cols_A):
                     result_intervals[i][j] += self.intervals[i][k]*other.intervals[k][j]
-        
         return IntervalMatrix(result_intervals)
     
     def calculateMidpoint(self):
@@ -58,7 +52,6 @@ class IntervalMatrix:
         for i in range(self.rows):
             for j in range(self.cols):
                 midpoint_matrix[i][j] = self.intervals[i][j].midpoint()
-
         return midpoint_matrix
 
     def calculateRadius(self):
@@ -66,5 +59,4 @@ class IntervalMatrix:
         for i in range(self.rows):
             for j in range(self.cols):
                 radius_matrix[i][j] = self.intervals[i][j].radius()
-
         return radius_matrix

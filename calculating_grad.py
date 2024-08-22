@@ -49,10 +49,13 @@ def _eval_node(node, variables):
 
 
 def evaluate_expression(expression, intervals, symbols):
-    variables = {}
-    mapping = zip(symbols, intervals)
+    """
+    Wrapper function to evaluate a mathematical expression with intervals.
 
-    for s, i in mapping:
-        variables[s] = i
-
+    :param expression: A string representing the mathematical expression.
+    :param intervals: A list of Interval objects corresponding to the symbols.
+    :param symbols: A list of symbol names corresponding to the intervals.
+    :return: The result of the evaluated expression.
+    """
+    variables = dict(zip(symbols, intervals))
     return evaluate_string_expression(expression, variables)
