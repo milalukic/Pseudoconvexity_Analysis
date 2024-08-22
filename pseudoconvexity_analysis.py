@@ -1,9 +1,9 @@
-# import tangent
 import numpy as np
 import sympy as sp
 
+from calculating_grad import evaluate_expression
 from interval_matrix import IntervalMatrix, Interval
-from tests_unofficial import f_der1, f_der2, f2_der1, f2_der2
+from tests_unofficial import f1, f_der1, f_der2, f2, f2_der1, f2_der2
 
 # Computing the hessian matrix and gradients from a function 
 def compute_hessian(f, symbols):
@@ -17,29 +17,18 @@ def compute_gradient(f, symbols):
         gradient.append(sp.diff(f, symbol))
     return np.array(gradient)
 
-def compute_M(H, g, intervals, alpha=1.0):
+def compute_M(H, g, intervals, symbols, alpha=1.0):
 
     # M_alpha = H + alpha*g*g^T - actual formula to calculate M
     gt = g.reshape(-1,1)
     M = H + alpha* np.outer(g, gt)
-
-    # TODO: make this expression evaluation automatic. It took too long for me to figure out so I just did it like this temporarily
-    # Calculated the expressions from M by hand 
-    interval_value1 = f2_der1(intervals[0], intervals[1])
-    interval_value2 = f2_der2(intervals[0], intervals[1])
-    interval_value3 = f2_der1(intervals[1], intervals[0])
-
-    intervals_evaluated = [[interval_value1, interval_value2], 
-                           [interval_value2, interval_value3]]
-
-    # TODO: automatically make this with a bunch of ugly loops   
-    # 3d 
-    # x2 xy xz 
-    # xy y2 yz
-    # xz yz z2
+    M_eval = []
+    for expression in M:
+        result = evaluate_expression(str(expression), intervals, symbols)
+        M_eval.append(result)
 
     # create a matrix
-    IM = IntervalMatrix(intervals_evaluated)
+    IM = IntervalMatrix(M_eval)
     # return the matrix M_alpha
     return IM
 
@@ -60,6 +49,7 @@ def second_condition(M):
     z = np.diag([1 for _ in range(M.rows)])
     
     M_combined = Mc - Md*z
+    print(M_combined)
 
     # positive semidefinite = all eigvals >= 0
     return np.all(np.linalg.eigvals(M_combined) >= 0)

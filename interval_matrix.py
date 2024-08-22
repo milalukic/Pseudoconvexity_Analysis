@@ -1,11 +1,19 @@
 from interval import Interval
 import numpy as np
+import math
 
 class IntervalMatrix:
     def __init__(self, intervals):
-        self.intervals = intervals
-        self.rows = len(self.intervals)
-        self.cols = 2
+        self.rows = int(math.sqrt(len(intervals)))
+        self.cols = self.rows
+        
+        self.intervals = []
+
+        it = 0
+
+        for _ in range(self.rows):
+            self.intervals.append(intervals[it:self.cols+it])
+            it+=self.cols
     
     def __str__(self) -> str:
         # each row in a
@@ -46,17 +54,17 @@ class IntervalMatrix:
         return IntervalMatrix(result_intervals)
     
     def calculateMidpoint(self):
-        midpoint_matrix = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        midpoint_matrix = np.zeros((self.rows, self.rows))
         for i in range(self.rows):
             for j in range(self.cols):
-                midpoint_matrix[i][j] += 0.5 * (self.intervals[i][j] + self.intervals[i][j])
+                midpoint_matrix[i][j] = self.intervals[i][j].midpoint()
 
-        return np.array(midpoint_matrix)
+        return midpoint_matrix
 
     def calculateRadius(self):
-        radius_matrix = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        radius_matrix = np.zeros((self.rows, self.rows))
         for i in range(self.rows):
             for j in range(self.cols):
-                radius_matrix[i][j] += 0.5 * (self.intervals[i][j] - self.intervals[i][j])
+                radius_matrix[i][j] = self.intervals[i][j].radius()
 
         return radius_matrix
