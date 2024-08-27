@@ -8,6 +8,9 @@ class Interval:
     def __repr__(self):
         return f"({self.start}, {self.end})"
     
+    def __neg__(self):
+        return Interval(-self.end, -self.start)
+    
     def __add__(self, other):
         if isinstance(other, (int, float)):
             return Interval(self.start + other, self.end + other)
@@ -22,7 +25,7 @@ class Interval:
         if isinstance(other, (int, float)):
             return Interval(self.start * other, self.end * other)
         else:
-            M = [self.start*other.start, self.start*other.end, self.end*other.start, self.end*other.end];
+            M = [self.start*other.start, self.start*other.end, self.end*other.start, self.end*other.end]
             return Interval(min(M), max(M))
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -35,12 +38,13 @@ class Interval:
 
     def __pow__(self, exponent):
         result = Interval(self.start, self.end)
-        for i in range(exponent-1):
-            result *= Interval(self.start, self.end)
-
         # Handle cases where the interval includes negative numbers and the exponent is even
         if exponent%2 == 0:
             result.start = max(result.start, 0)
+
+        for i in range(exponent-1):
+            result *= Interval(self.start, self.end)
+
         return result
     
     def midpoint(self):

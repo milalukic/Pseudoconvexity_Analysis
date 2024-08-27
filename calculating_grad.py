@@ -44,6 +44,10 @@ def _eval_node(node, variables):
         return Interval(node.n, node.n)
     elif isinstance(node, ast.Constant):  # For Python 3.8 and later
         return Interval(node.value, node.value)
+    elif isinstance(node, ast.UnaryOp):  # Handling Unary Operations
+        operand = _eval_node(node.operand, variables)
+        if isinstance(node.op, ast.USub):  # Negation
+            return -operand
     else:
         raise TypeError(node)
 
@@ -58,4 +62,6 @@ def evaluate_expression(expression, intervals, symbols):
     :return: The result of the evaluated expression.
     """
     variables = dict(zip(symbols, intervals))
-    return evaluate_string_expression(expression, variables)
+    evaluated = evaluate_string_expression(expression, variables)
+
+    return evaluated

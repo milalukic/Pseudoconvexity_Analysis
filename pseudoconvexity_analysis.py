@@ -3,7 +3,7 @@ import sympy as sp
 
 from calculating_grad import evaluate_expression
 from interval_matrix import IntervalMatrix, Interval
-from tests_unofficial import f1, f_der1, f_der2, f2, f2_der1, f2_der2
+from tests_unofficial import f1, f2, f3 
 
 def compute_hessian(f, symbols):
     # Compute the Hessian matrix of a function.
@@ -15,15 +15,15 @@ def compute_gradient(f, symbols):
     return sp.Matrix(gradient)
 
 def make_gradient_matrix(g):
-    g_matrix = g * g.T
+    g_matrix = g*g.T
     # Expand each element of the matrix
-    g_matrix_expanded = g_matrix.applyfunc(sp.expand)
-    return g_matrix_expanded
+    # g_matrix_expanded = g_matrix.applyfunc(sp.expand)
+    return g_matrix
 
-def compute_M(H, g, intervals, symbols, alpha=1.0):
+def compute_M(H, g, intervals, symbols, alpha):
     # Compute the matrix M_alpha using Hessian H, gradient g, and scalar alpha.
     g_matrix = make_gradient_matrix(g)
-    M = H + alpha * g_matrix
+    M = alpha * g_matrix + H
 
     M_eval = [evaluate_expression(str(expr), intervals, symbols) for expr in M]
     return IntervalMatrix(M_eval)
