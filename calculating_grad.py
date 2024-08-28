@@ -35,9 +35,12 @@ def _eval_node(node, variables):
         elif isinstance(op, ast.Div):
             return left / right
         elif isinstance(op, ast.Pow):
-            return left ** right.start
+            if isinstance(right, Interval):
+                return left ** right.start  # This handles Interval as the exponent
+            else:
+                return left ** right  # This handles a simple number as the exponent
         else:
-            raise TypeError(op)
+            raise TypeError(f"Unsupported operation: {op}")
     elif isinstance(node, ast.Name):
         return variables[node.id]
     elif isinstance(node, ast.Num):
@@ -49,7 +52,8 @@ def _eval_node(node, variables):
         if isinstance(node.op, ast.USub):  # Negation
             return -operand
     else:
-        raise TypeError(node)
+        raise TypeError(f"Unsupported node type: {type(node)}")
+
 
 
 def evaluate_expression(expression, intervals, symbols):
