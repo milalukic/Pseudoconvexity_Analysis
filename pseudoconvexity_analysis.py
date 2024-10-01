@@ -2,8 +2,7 @@ import numpy as np
 import sympy as sp
 
 from calculating_grad import evaluate_expression
-from interval_matrix import IntervalMatrix, Interval
-from tests_unofficial import f1, f2, f3, f4 
+from interval_matrix import IntervalMatrix
 
 def compute_hessian(f, symbols):
     # Compute the Hessian matrix of a function.

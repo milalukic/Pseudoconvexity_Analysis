@@ -1,25 +1,24 @@
 import pseudoconvexity_analysis as pca
-import numpy as np
+import tests_unofficial as tests
 import sympy as sp
-
-from pseudoconvexity_analysis import Interval
-
+from interval import Interval
 
 sp_symbols = sp.symbols('x')
-f = pca.f4(sp_symbols, 0, 1)
+f = tests.gamma(sp_symbols, 0.5, 1.0)
 f_neg = -f
 f_log = sp.log(f)
 f_log_neg = -f_log
 
 functions = [f, f_log, f_neg, f_log_neg]
 descriptor = ["pseudoconvex", "log-convex", "pseudoconcave", "log-concave"]
-symbols = [str(sp_symbols)]
+symbols = ['x']
 
 intervals = [
-        Interval(-3, 0)
-    ]
+    Interval(1.0, 1.05)  # Interval for x
+#     ,Interval(2.0, 2.99999999999)     # Interval for y (adjust as needed)
+]
 
-alpha = [a/100 for a in range(0, 100, 5)]
+alpha = [a/100 for a in range(0, 900, 5)]
 checkers = [False, False, False, False]
 i=0
 for function, descriptor in zip(functions, descriptor):
